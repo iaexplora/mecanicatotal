@@ -1,0 +1,761 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Mecánica Total – Taller Especializado</title>
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&family=Barlow+Condensed:wght@400;600;700;900&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --red: #C8102E;
+    --red-light: #E63950;
+    --blue: #003087;
+    --blue-light: #1a4ab0;
+    --light: #F5F5F3;
+    --white: #FFFFFF;
+    --ink: #111111;
+    --mid: #555555;
+    --soft: #E8E8E4;
+    --border: rgba(0,0,0,0.08);
+  }
+
+  *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--light);
+    color: var(--ink);
+    font-family: 'DM Sans', sans-serif;
+    overflow-x: hidden;
+  }
+
+  nav {
+    position: fixed;
+    inset: 0 0 auto 0;
+    z-index: 1000;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 60px;
+    height: 72px;
+    background: rgba(255,255,255,0.97);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border);
+    transition: box-shadow 0.3s;
+  }
+  nav.scrolled { box-shadow: 0 2px 20px rgba(0,0,0,0.08); }
+  .nav-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.6rem; letter-spacing: 3px; color: var(--blue); }
+  .nav-logo em { color: var(--red); font-style: normal; }
+  .nav-links { display: flex; gap: 36px; list-style: none; align-items: center; }
+  .nav-links a { text-decoration: none; color: var(--mid); font-size: 0.85rem; font-weight: 500; letter-spacing: 0.5px; transition: color 0.2s; }
+  .nav-links a:hover { color: var(--blue); }
+  .nav-cta { background: var(--red) !important; color: white !important; padding: 10px 22px; border-radius: 2px; font-weight: 600 !important; transition: background 0.2s !important; }
+  .nav-cta:hover { background: var(--red-light) !important; }
+
+  /* HERO */
+  #hero { height: 100vh; position: relative; display: flex; align-items: flex-end; overflow: hidden; }
+  .hero-img {
+    position: absolute; inset: 0;
+    background: url('https://images.unsplash.com/photo-1625047509252-ab38fb5c7343?w=1800&q=80') center/cover no-repeat;
+    animation: heroZoom 12s ease forwards;
+  }
+  @keyframes heroZoom { from { transform: scale(1.06); } to { transform: scale(1.0); } }
+  .hero-overlay {
+    position: absolute; inset: 0;
+    background: linear-gradient(to right, rgba(0,30,87,0.84) 0%, rgba(0,30,87,0.52) 55%, rgba(0,0,0,0.18) 100%);
+  }
+  .hero-overlay-b { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,0,0,0.5) 0%, transparent 55%); }
+
+  .hero-content { position: relative; z-index: 10; padding: 0 60px 80px; max-width: 680px; }
+
+  .hero-tag {
+    display: inline-block;
+    background: var(--red); color: white;
+    padding: 6px 16px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 3px; text-transform: uppercase;
+    margin-bottom: 22px;
+    opacity: 0; animation: slideUp 0.7s ease forwards 0.4s;
+  }
+  .hero-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(64px, 10vw, 130px);
+    line-height: 0.92; letter-spacing: 4px; color: white;
+    margin-bottom: 22px;
+    opacity: 0; animation: slideUp 0.7s ease forwards 0.6s;
+  }
+  .hero-title .acc { color: #7ab0ff; }
+  .hero-desc {
+    font-size: 1.05rem; color: rgba(255,255,255,0.72); line-height: 1.75; max-width: 440px;
+    margin-bottom: 38px; font-weight: 300;
+    opacity: 0; animation: slideUp 0.7s ease forwards 0.8s;
+  }
+  .hero-btns { display: flex; gap: 12px; flex-wrap: wrap; opacity: 0; animation: slideUp 0.7s ease forwards 1s; }
+
+  .hero-pills {
+    position: absolute; right: 60px; bottom: 80px; z-index: 10;
+    display: flex; flex-direction: column; gap: 10px;
+    opacity: 0; animation: fadeIn 0.7s ease forwards 1.3s;
+  }
+  .pill {
+    background: rgba(255,255,255,0.11); border: 1px solid rgba(255,255,255,0.22);
+    backdrop-filter: blur(8px); color: white;
+    padding: 10px 20px;
+    font-family: 'Barlow Condensed', sans-serif; font-size: 0.82rem; letter-spacing: 2px; text-transform: uppercase;
+    border-radius: 2px; display: flex; align-items: center; gap: 10px;
+  }
+  .pdot { width: 6px; height: 6px; border-radius: 50%; background: var(--red); }
+  .pdot.b { background: #7ab0ff; }
+
+  /* BUTTONS */
+  .btn-red {
+    background: var(--red); color: white;
+    padding: 13px 30px;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.88rem; letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none; border-radius: 2px; border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    display: inline-block;
+  }
+  .btn-red:hover { background: var(--red-light); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(200,16,46,0.28); }
+
+  .btn-outline-w {
+    background: transparent; color: white;
+    padding: 12px 30px;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 600; font-size: 0.88rem; letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none; border: 1.5px solid rgba(255,255,255,0.45); border-radius: 2px;
+    transition: all 0.2s; display: inline-block;
+  }
+  .btn-outline-w:hover { border-color: white; background: rgba(255,255,255,0.1); transform: translateY(-2px); }
+
+  .btn-blue {
+    background: var(--blue); color: white;
+    padding: 14px 30px; width: 100%; text-align: center;
+    font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.9rem; letter-spacing: 2px; text-transform: uppercase;
+    text-decoration: none; border-radius: 2px; border: none; cursor: pointer;
+    transition: background 0.2s, transform 0.2s, box-shadow 0.2s;
+    display: inline-block; margin-top: 8px;
+  }
+  .btn-blue:hover { background: var(--blue-light); transform: translateY(-2px); box-shadow: 0 6px 18px rgba(0,48,135,0.22); }
+
+  /* MARQUEE */
+  .marquee-wrap { background: var(--blue); padding: 12px 0; overflow: hidden; }
+  .marquee-track { display: flex; animation: marquee 30s linear infinite; width: max-content; }
+  .marquee-track span { white-space: nowrap; font-family: 'Barlow Condensed', sans-serif; font-size: 0.82rem; letter-spacing: 4px; color: rgba(255,255,255,0.78); padding: 0 28px; text-transform: uppercase; }
+  .marquee-track .sep { color: rgba(255,255,255,0.28); padding: 0; }
+  @keyframes marquee { 0% { transform: translateX(0); } 100% { transform: translateX(-50%); } }
+
+  /* SECTION */
+  section { padding: 100px 60px; }
+  .label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem; letter-spacing: 4px; color: var(--red); text-transform: uppercase; margin-bottom: 10px; }
+  h2.sec-title { font-family: 'Bebas Neue', sans-serif; font-size: clamp(42px, 5vw, 72px); letter-spacing: 3px; line-height: 1; color: var(--ink); }
+
+  /* SERVICIOS */
+  #servicios { background: var(--white); }
+  .services-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; align-items: start; margin-top: 60px; }
+
+  .services-photo { position: relative; height: 560px; overflow: hidden; border-radius: 2px; }
+  .services-photo img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; display: block; }
+  .services-photo:hover img { transform: scale(1.04); }
+  .spb {
+    position: absolute; bottom: 28px; left: 28px;
+    background: var(--blue); color: white;
+    padding: 14px 22px;
+    font-family: 'Bebas Neue', sans-serif; font-size: 1.1rem; letter-spacing: 3px; border-radius: 2px;
+  }
+
+  .services-list { display: flex; flex-direction: column; }
+  .service-item {
+    padding: 26px 0; border-bottom: 1px solid var(--border);
+    display: flex; align-items: flex-start; gap: 22px;
+    transition: padding-left 0.3s; cursor: default;
+  }
+  .service-item:first-child { border-top: 1px solid var(--border); }
+  .service-item:hover { padding-left: 8px; }
+  .si-num { font-family: 'Bebas Neue', sans-serif; font-size: 2rem; color: var(--soft); line-height: 1; min-width: 44px; transition: color 0.3s; }
+  .service-item:hover .si-num { color: var(--red); }
+  .si-name { font-family: 'Bebas Neue', sans-serif; font-size: 1.45rem; letter-spacing: 2px; color: var(--ink); margin-bottom: 5px; }
+  .si-desc { font-size: 0.88rem; color: var(--mid); line-height: 1.65; }
+  .si-arr { margin-left: auto; color: var(--soft); font-size: 1.1rem; transition: color 0.3s, transform 0.3s; padding-top: 4px; }
+  .service-item:hover .si-arr { color: var(--red); transform: translateX(4px); }
+
+  /* PHOTO BREAK */
+  .photo-break { height: 460px; display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 4px; overflow: hidden; }
+  .pb-img { overflow: hidden; position: relative; }
+  .pb-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.7s ease; filter: brightness(0.85); display: block; }
+  .pb-img:hover img { transform: scale(1.06); filter: brightness(1); }
+  .pb-wide { grid-column: span 2; }
+  .pb-ov {
+    position: absolute; inset: 0;
+    background: linear-gradient(to top, rgba(0,30,87,0.72) 0%, transparent 55%);
+    display: flex; align-items: flex-end; padding: 28px;
+    opacity: 0; transition: opacity 0.4s;
+  }
+  .pb-img:hover .pb-ov { opacity: 1; }
+  .pb-ov span { font-family: 'Bebas Neue', sans-serif; font-size: 1.3rem; letter-spacing: 3px; color: white; }
+
+  /* VEHICULOS */
+  #vehiculos { background: var(--light); }
+  .vehicles-header { display: flex; justify-content: space-between; align-items: flex-end; margin-bottom: 44px; flex-wrap: wrap; gap: 20px; }
+  .vehicles-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; }
+  .vehicle-card { position: relative; height: 420px; overflow: hidden; cursor: default; }
+  .vehicle-card img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; filter: brightness(0.72); display: block; }
+  .vehicle-card:hover img { transform: scale(1.06); filter: brightness(0.58); }
+  .vc-overlay { position: absolute; inset: 0; background: linear-gradient(to top, rgba(0,30,87,0.86) 0%, rgba(0,0,0,0) 55%); transition: background 0.4s; }
+  .vehicle-card:hover .vc-overlay { background: linear-gradient(to top, rgba(0,30,87,0.94) 0%, rgba(0,30,87,0.28) 100%); }
+  .vc-bar { position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--red); transform: scaleY(0); transform-origin: bottom; transition: transform 0.4s ease; }
+  .vehicle-card:hover .vc-bar { transform: scaleY(1); }
+  .vc-content { position: absolute; bottom: 0; left: 0; right: 0; padding: 30px; }
+  .vc-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 0.62rem; letter-spacing: 4px; color: rgba(255,255,255,0.55); text-transform: uppercase; margin-bottom: 6px; }
+  .vc-name { font-family: 'Bebas Neue', sans-serif; font-size: 2.1rem; letter-spacing: 3px; color: white; margin-bottom: 10px; }
+  .vc-tags { display: flex; flex-wrap: wrap; gap: 6px; opacity: 0; transform: translateY(10px); transition: opacity 0.4s 0.08s, transform 0.4s 0.08s; }
+  .vehicle-card:hover .vc-tags { opacity: 1; transform: translateY(0); }
+  .vc-tag { background: rgba(255,255,255,0.14); border: 1px solid rgba(255,255,255,0.22); color: rgba(255,255,255,0.82); padding: 4px 10px; font-family: 'Barlow Condensed', sans-serif; font-size: 0.68rem; letter-spacing: 1.5px; text-transform: uppercase; border-radius: 1px; }
+
+  /* STATS */
+  #stats { background: var(--blue); padding: 70px 60px; }
+  .stats-grid { display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
+  .stat-item { padding: 36px; border-right: 1px solid rgba(255,255,255,0.1); text-align: center; }
+  .stat-item:last-child { border-right: none; }
+  .stat-num { font-family: 'Bebas Neue', sans-serif; font-size: clamp(48px, 6vw, 78px); color: white; line-height: 1; letter-spacing: 2px; }
+  .stat-num em { color: var(--red); font-style: normal; }
+  .stat-lbl { font-family: 'Barlow Condensed', sans-serif; font-size: 0.72rem; letter-spacing: 3px; color: rgba(255,255,255,0.48); text-transform: uppercase; margin-top: 7px; }
+
+  /* PHOTO STRIP */
+  .photo-strip { height: 360px; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 4px; overflow: hidden; }
+  .ps-img { overflow: hidden; }
+  .ps-img img { width: 100%; height: 100%; object-fit: cover; transition: transform 0.6s ease; display: block; }
+  .ps-img:hover img { transform: scale(1.06); }
+
+  /* HORARIO */
+  #horario { background: var(--white); }
+  .horario-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; margin-top: 55px; align-items: start; }
+
+  .schedule-table { width: 100%; border-collapse: collapse; }
+  .schedule-table tr { border-bottom: 1px solid var(--border); }
+  .schedule-table tr:first-child { border-top: 1px solid var(--border); }
+  .schedule-table td { padding: 18px 0; font-size: 0.97rem; }
+  .schedule-table .day { color: var(--ink); font-weight: 500; }
+  .schedule-table .time { color: var(--blue); font-family: 'Barlow Condensed', sans-serif; font-size: 1.08rem; letter-spacing: 2px; text-align: right; }
+  .schedule-table .closed { color: var(--mid); font-size: 0.88rem; text-align: right; }
+  .schedule-table tr.sat .day { color: var(--red); }
+  .schedule-table tr.sat .time { color: var(--red); }
+
+  .note-box { margin-top: 36px; padding: 20px 24px; background: var(--light); border-left: 3px solid var(--red); border-radius: 2px; font-size: 0.88rem; color: var(--mid); line-height: 1.7; }
+
+  .contact-card { background: var(--light); border: 1px solid var(--border); padding: 36px; border-radius: 2px; margin-bottom: 22px; }
+  .contact-row { display: flex; align-items: flex-start; gap: 14px; padding: 16px 0; border-bottom: 1px solid var(--border); }
+  .contact-row:first-child { padding-top: 0; }
+  .contact-row:last-child { border-bottom: none; padding-bottom: 0; }
+  .c-icon { width: 36px; height: 36px; min-width: 36px; background: var(--blue); border-radius: 2px; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+  .c-icon svg { width: 17px; height: 17px; stroke: white; fill: none; stroke-width: 1.8; }
+  .c-icon.red { background: var(--red); }
+  .c-label { font-family: 'Barlow Condensed', sans-serif; font-size: 0.63rem; letter-spacing: 3px; color: var(--mid); text-transform: uppercase; margin-bottom: 3px; }
+  .c-val { font-size: 0.93rem; color: var(--ink); line-height: 1.5; }
+  .c-val a { color: var(--blue); text-decoration: none; transition: color 0.2s; }
+  .c-val a:hover { color: var(--red); }
+
+  /* AGENDAR */
+  #agendar { background: var(--light); position: relative; overflow: hidden; }
+  #agendar::before {
+    content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 45%;
+    background: url('https://images.unsplash.com/photo-1621905251189-08b45d6a269e?w=900&q=80') center/cover no-repeat;
+    filter: brightness(0.38);
+  }
+  .form-layout { display: grid; grid-template-columns: 1fr 1fr; gap: 80px; position: relative; z-index: 2; align-items: start; }
+  .form-perks { margin-top: 32px; display: flex; flex-direction: column; gap: 13px; }
+  .form-perk { display: flex; align-items: center; gap: 12px; font-size: 0.92rem; color: var(--mid); }
+  .pdot2 { width: 6px; height: 6px; min-width: 6px; border-radius: 50%; background: var(--red); }
+
+  .appt-form { background: var(--white); padding: 44px; border-radius: 2px; box-shadow: 0 4px 40px rgba(0,0,0,0.1); }
+  .form-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.7rem; letter-spacing: 3px; color: var(--blue); margin-bottom: 26px; padding-bottom: 18px; border-bottom: 1px solid var(--border); }
+
+  .form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+  .form-group { margin-bottom: 16px; display: flex; flex-direction: column; gap: 5px; }
+  .form-group label { font-size: 0.7rem; font-weight: 600; letter-spacing: 1px; color: var(--mid); text-transform: uppercase; }
+  .form-group input,
+  .form-group select,
+  .form-group textarea {
+    background: var(--light); border: 1.5px solid var(--border); color: var(--ink);
+    padding: 11px 14px; font-family: 'DM Sans', sans-serif; font-size: 0.93rem; outline: none;
+    border-radius: 2px; transition: border-color 0.2s, box-shadow 0.2s;
+    appearance: none; -webkit-appearance: none;
+  }
+  .form-group input:focus,
+  .form-group select:focus,
+  .form-group textarea:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(0,48,135,0.07); }
+  .form-group input::placeholder, .form-group textarea::placeholder { color: #bbb; }
+  .form-group textarea { resize: vertical; min-height: 88px; }
+
+  .success-msg { display: none; background: rgba(0,130,60,0.08); border: 1px solid rgba(0,130,60,0.25); color: #006b30; padding: 14px; text-align: center; font-size: 0.88rem; border-radius: 2px; margin-top: 10px; }
+
+  /* FOOTER */
+  footer { background: var(--ink); padding: 65px 60px 28px; }
+  .footer-grid { display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 60px; padding-bottom: 44px; border-bottom: 1px solid rgba(255,255,255,0.07); margin-bottom: 28px; }
+  .f-logo { font-family: 'Bebas Neue', sans-serif; font-size: 1.9rem; letter-spacing: 4px; color: white; margin-bottom: 13px; }
+  .f-logo em { color: var(--red); font-style: normal; }
+  .f-desc { color: rgba(255,255,255,0.38); font-size: 0.88rem; line-height: 1.75; max-width: 270px; }
+  .f-col h4 { font-family: 'Barlow Condensed', sans-serif; font-size: 0.67rem; letter-spacing: 4px; color: rgba(255,255,255,0.32); text-transform: uppercase; margin-bottom: 18px; }
+  .f-links { list-style: none; display: flex; flex-direction: column; gap: 9px; }
+  .f-links a { text-decoration: none; color: rgba(255,255,255,0.5); font-size: 0.88rem; transition: color 0.2s; }
+  .f-links a:hover { color: white; }
+  .footer-bottom { display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 12px; }
+  .footer-bottom p { color: rgba(255,255,255,0.28); font-size: 0.78rem; }
+  .footer-bottom strong { color: var(--red); }
+  .f-socials { display: flex; gap: 10px; }
+  .f-socials a { width: 34px; height: 34px; border: 1px solid rgba(255,255,255,0.1); display: flex; align-items: center; justify-content: center; text-decoration: none; color: rgba(255,255,255,0.38); font-size: 0.78rem; border-radius: 2px; transition: all 0.2s; }
+  .f-socials a:hover { border-color: var(--red); color: var(--red); }
+
+  /* FLOATING */
+  .floating { position: fixed; bottom: 26px; right: 26px; z-index: 999; display: flex; flex-direction: column; gap: 8px; align-items: flex-end; }
+  .float-btn { display: flex; align-items: center; gap: 8px; padding: 10px 18px; font-family: 'Barlow Condensed', sans-serif; font-weight: 700; font-size: 0.8rem; letter-spacing: 1.5px; text-transform: uppercase; text-decoration: none; border-radius: 2px; color: white; transition: transform 0.2s, box-shadow 0.2s; box-shadow: 0 3px 14px rgba(0,0,0,0.18); }
+  .float-btn:hover { transform: translateY(-2px); box-shadow: 0 7px 22px rgba(0,0,0,0.22); }
+  .float-wa { background: #25D366; }
+  .float-tel { background: var(--blue); }
+
+  /* REVEAL */
+  .reveal { opacity: 0; transform: translateY(26px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal-l { opacity: 0; transform: translateX(-26px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-l.in { opacity: 1; transform: translateX(0); }
+  .reveal-r { opacity: 0; transform: translateX(26px); transition: opacity 0.7s ease, transform 0.7s ease; }
+  .reveal-r.in { opacity: 1; transform: translateX(0); }
+
+  @keyframes slideUp { from { opacity: 0; transform: translateY(22px); } to { opacity: 1; transform: translateY(0); } }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  @media (max-width: 900px) {
+    nav { padding: 0 20px; }
+    .nav-links { display: none; }
+    section { padding: 60px 20px; }
+    .services-layout, .horario-layout, .form-layout, .vehicles-grid { grid-template-columns: 1fr; gap: 36px; }
+    .services-photo { height: 280px; }
+    .vehicle-card { height: 260px; }
+    .stats-grid { grid-template-columns: repeat(2, 1fr); }
+    .stat-item { border-bottom: 1px solid rgba(255,255,255,0.08); }
+    .photo-break { height: 240px; grid-template-columns: 1fr; }
+    .pb-wide { grid-column: span 1; }
+    .photo-strip { height: auto; grid-template-columns: 1fr; }
+    .ps-img { height: 200px; }
+    .footer-grid { grid-template-columns: 1fr; gap: 28px; }
+    .hero-pills { display: none; }
+    .hero-content { padding: 0 20px 55px; }
+    #agendar::before { display: none; }
+    .form-row { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<nav id="nav">
+  <div class="nav-logo">MECÁNICA <em>TOTAL</em></div>
+  <ul class="nav-links">
+    <li><a href="#servicios">Servicios</a></li>
+    <li><a href="#vehiculos">Vehículos</a></li>
+    <li><a href="#horario">Horario</a></li>
+    <li><a href="#horario">Contacto</a></li>
+    <li><a href="#agendar" class="nav-cta">Agendar Cita</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section id="hero">
+  <div class="hero-img"></div>
+  <div class="hero-overlay"></div>
+  <div class="hero-overlay-b"></div>
+  <div class="hero-content">
+    <div class="hero-tag">Taller Especializado · Tequixquiac, Estado de México</div>
+    <h1 class="hero-title">MECÁNICA<br><span class="acc">TOTAL</span></h1>
+    <p class="hero-desc">Motos, automóviles y tractocamiones. Servicio profesional con la mejor tecnología y años de experiencia a tu servicio.</p>
+    <div class="hero-btns">
+      <a href="#agendar" class="btn-red">Agendar Cita</a>
+      <a href="tel:5570863685" class="btn-outline-w">55 7086 3685</a>
+    </div>
+  </div>
+  <div class="hero-pills">
+    <div class="pill"><div class="pdot"></div>Motocicletas</div>
+    <div class="pill"><div class="pdot b"></div>Automóviles</div>
+    <div class="pill"><div class="pdot"></div>Tractocamiones</div>
+  </div>
+</section>
+
+<!-- MARQUEE -->
+<div class="marquee-wrap">
+  <div class="marquee-track">
+    <span>Mecánica General</span><span class="sep"> · </span>
+    <span>Alineación & Balanceo</span><span class="sep"> · </span>
+    <span>Sistema de Frenos</span><span class="sep"> · </span>
+    <span>Revisión con Escáner</span><span class="sep"> · </span>
+    <span>Motos · Carros · Tractocamiones</span><span class="sep"> · </span>
+    <span>Mecánica General</span><span class="sep"> · </span>
+    <span>Alineación & Balanceo</span><span class="sep"> · </span>
+    <span>Sistema de Frenos</span><span class="sep"> · </span>
+    <span>Revisión con Escáner</span><span class="sep"> · </span>
+    <span>Motos · Carros · Tractocamiones</span><span class="sep"> · </span>
+  </div>
+</div>
+
+<!-- SERVICIOS -->
+<section id="servicios">
+  <div class="services-layout">
+    <div class="reveal-l">
+      <div class="services-photo">
+        <img src="https://images.unsplash.com/photo-1530046339160-ce3e530c7d2f?w=900&q=80" alt="Taller mecánico">
+        <div class="spb">+15 años de experiencia</div>
+      </div>
+    </div>
+    <div class="reveal-r">
+      <div class="label">Especialidades</div>
+      <h2 class="sec-title">NUESTROS<br>SERVICIOS</h2>
+      <div class="services-list" style="margin-top:34px">
+        <div class="service-item">
+          <div class="si-num">01</div>
+          <div>
+            <div class="si-name">Mecánica General</div>
+            <div class="si-desc">Diagnóstico y reparación de motor, transmisión, suspensión y sistema eléctrico para todo tipo de vehículo.</div>
+          </div>
+          <div class="si-arr">→</div>
+        </div>
+        <div class="service-item">
+          <div class="si-num">02</div>
+          <div>
+            <div class="si-name">Alineación & Balanceo</div>
+            <div class="si-desc">Equipo de última generación para una dirección perfecta y mayor vida útil de tus neumáticos.</div>
+          </div>
+          <div class="si-arr">→</div>
+        </div>
+        <div class="service-item">
+          <div class="si-num">03</div>
+          <div>
+            <div class="si-name">Sistema de Frenos</div>
+            <div class="si-desc">Revisión y reparación completa. Balatas, discos, tambores y sistemas ABS para tu seguridad.</div>
+          </div>
+          <div class="si-arr">→</div>
+        </div>
+        <div class="service-item">
+          <div class="si-num">04</div>
+          <div>
+            <div class="si-name">Revisión con Escáner</div>
+            <div class="si-desc">Diagnóstico electrónico multimarca. Detección precisa de fallas en todos los sistemas del vehículo.</div>
+          </div>
+          <div class="si-arr">→</div>
+        </div>
+      </div>
+      <div style="margin-top:36px">
+        <a href="#agendar" class="btn-red">Solicitar Servicio</a>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- PHOTO BREAK -->
+<div class="photo-break">
+  <div class="pb-img pb-wide">
+    <img src="https://images.unsplash.com/photo-1568772585407-9361f9bf3a87?w=1200&q=80" alt="Mecánico trabajando">
+    <div class="pb-ov"><span>Servicio Profesional</span></div>
+  </div>
+  <div class="pb-img">
+    <img src="https://images.unsplash.com/photo-1597766353939-a02d72ca9f47?w=600&q=80" alt="Taller">
+    <div class="pb-ov"><span>Equipamiento</span></div>
+  </div>
+  <div class="pb-img">
+    <img src="https://images.unsplash.com/photo-1580273916550-e323be2ae537?w=600&q=80" alt="Motor">
+    <div class="pb-ov"><span>Precisión</span></div>
+  </div>
+</div>
+
+<!-- VEHÍCULOS -->
+<section id="vehiculos">
+  <div class="vehicles-header reveal">
+    <div>
+      <div class="label">Atendemos</div>
+      <h2 class="sec-title">TIPOS DE<br>VEHÍCULOS</h2>
+    </div>
+    <p style="color:var(--mid);max-width:320px;font-size:0.92rem;line-height:1.75">Instalaciones y equipos especializados para cada tipo de unidad, desde motos hasta tractocamiones.</p>
+  </div>
+  <div class="vehicles-grid reveal" style="transition-delay:0.12s">
+    <div class="vehicle-card">
+      <div class="vc-bar"></div>
+      <img src="https://images.unsplash.com/photo-1558981806-ec527fa84c39?w=700&q=80" alt="Motocicletas">
+      <div class="vc-overlay"></div>
+      <div class="vc-content">
+        <div class="vc-lbl">Especialidad</div>
+        <div class="vc-name">MOTOCICLETAS</div>
+        <div class="vc-tags">
+          <span class="vc-tag">Sport</span><span class="vc-tag">Naked</span><span class="vc-tag">Enduro</span><span class="vc-tag">Scooters</span>
+        </div>
+      </div>
+    </div>
+    <div class="vehicle-card">
+      <div class="vc-bar"></div>
+      <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=700&q=80" alt="Automóviles">
+      <div class="vc-overlay"></div>
+      <div class="vc-content">
+        <div class="vc-lbl">Especialidad</div>
+        <div class="vc-name">AUTOMÓVILES</div>
+        <div class="vc-tags">
+          <span class="vc-tag">Sedanes</span><span class="vc-tag">SUV</span><span class="vc-tag">Camionetas</span><span class="vc-tag">Pick-up</span>
+        </div>
+      </div>
+    </div>
+    <div class="vehicle-card">
+      <div class="vc-bar"></div>
+      <img src="https://images.unsplash.com/photo-1601584115197-04ecc0da31d7?w=700&q=80" alt="Tractocamiones">
+      <div class="vc-overlay"></div>
+      <div class="vc-content">
+        <div class="vc-lbl">Especialidad</div>
+        <div class="vc-name">TRACTOCAMIONES</div>
+        <div class="vc-tags">
+          <span class="vc-tag">Carga pesada</span><span class="vc-tag">Flotas</span><span class="vc-tag">Remolques</span>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- STATS -->
+<section id="stats">
+  <div class="stats-grid">
+    <div class="stat-item reveal" style="transition-delay:0.04s">
+      <div class="stat-num" data-val="15">15<em>+</em></div>
+      <div class="stat-lbl">Años de experiencia</div>
+    </div>
+    <div class="stat-item reveal" style="transition-delay:0.08s">
+      <div class="stat-num" data-val="3">3</div>
+      <div class="stat-lbl">Tipos de vehículo</div>
+    </div>
+    <div class="stat-item reveal" style="transition-delay:0.12s">
+      <div class="stat-num" data-val="4">4</div>
+      <div class="stat-lbl">Servicios especializados</div>
+    </div>
+    <div class="stat-item reveal" style="transition-delay:0.16s">
+      <div class="stat-num" data-val="6">6</div>
+      <div class="stat-lbl">Días a la semana</div>
+    </div>
+  </div>
+</section>
+
+<!-- PHOTO STRIP -->
+<div class="photo-strip">
+  <div class="ps-img"><img src="https://images.unsplash.com/photo-1486262715619-67b85e0b08d3?w=900&q=80" alt="Taller mecánico"></div>
+  <div class="ps-img"><img src="https://images.unsplash.com/photo-1492144534655-ae79c964c9d7?w=600&q=80" alt="Automóvil"></div>
+  <div class="ps-img"><img src="https://images.unsplash.com/photo-1591293836027-c2d8a1f7fc2e?w=600&q=80" alt="Motocicleta"></div>
+</div>
+
+<!-- HORARIO -->
+<section id="horario">
+  <div class="label">Información</div>
+  <h2 class="sec-title">HORARIO &<br>CONTACTO</h2>
+  <div class="horario-layout">
+    <div class="reveal-l">
+      <table class="schedule-table">
+        <tr><td class="day">Lunes</td><td class="time">08:00 – 17:30</td></tr>
+        <tr><td class="day">Martes</td><td class="time">08:00 – 17:30</td></tr>
+        <tr><td class="day">Miércoles</td><td class="time">08:00 – 17:30</td></tr>
+        <tr><td class="day">Jueves</td><td class="time">08:00 – 17:30</td></tr>
+        <tr><td class="day">Viernes</td><td class="time">08:00 – 17:30</td></tr>
+        <tr class="sat"><td class="day">Sábado</td><td class="time">08:00 – 13:00</td></tr>
+        <tr><td class="day" style="color:var(--mid)">Domingo</td><td class="closed">Cerrado</td></tr>
+      </table>
+      <div class="note-box">Sin necesidad de cita previa. Te recomendamos agendar para garantizar tu atención sin tiempos de espera.</div>
+    </div>
+    <div class="reveal-r">
+      <div class="contact-card">
+        <div class="contact-row">
+          <div class="c-icon">
+            <svg viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg>
+          </div>
+          <div>
+            <div class="c-label">Dirección</div>
+            <div class="c-val">San Mateo Benito Juárez S/N<br>Tequixquiac, Estado de México</div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="c-icon red">
+            <svg viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12a19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 3.6 1.18h3a2 2 0 0 1 2 1.72c.127.96.361 1.903.7 2.81a2 2 0 0 1-.45 2.11L7.91 8.91a16 16 0 0 0 6.36 6.36l.87-.87a2 2 0 0 1 2.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+          </div>
+          <div>
+            <div class="c-label">Teléfono</div>
+            <div class="c-val"><a href="tel:5570863685">55 7086 3685</a></div>
+          </div>
+        </div>
+        <div class="contact-row">
+          <div class="c-icon">
+            <svg viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg>
+          </div>
+          <div>
+            <div class="c-label">Correo electrónico</div>
+            <div class="c-val"><a href="mailto:mecanicatotaltx@gmail.com">mecanicatotaltx@gmail.com</a></div>
+          </div>
+        </div>
+      </div>
+      <a href="#agendar" class="btn-red" style="width:100%;text-align:center;display:block;padding:14px 0">Reservar mi cita →</a>
+    </div>
+  </div>
+</section>
+
+<!-- AGENDAR -->
+<section id="agendar">
+  <div class="form-layout">
+    <div class="reveal-l">
+      <div class="label">Reservaciones</div>
+      <h2 class="sec-title">AGENDA<br>TU CITA</h2>
+      <p style="color:var(--mid);margin-top:14px;line-height:1.8;font-size:0.92rem">Reserva tu turno con anticipación y recibe atención prioritaria sin tiempos de espera.</p>
+      <div class="form-perks">
+        <div class="form-perk"><div class="pdot2"></div>Confirmación inmediata por teléfono</div>
+        <div class="form-perk"><div class="pdot2"></div>Sin costo adicional por cita previa</div>
+        <div class="form-perk"><div class="pdot2"></div>Atendemos motos, carros y tractocamiones</div>
+        <div class="form-perk"><div class="pdot2"></div>Presupuesto sin compromiso</div>
+      </div>
+    </div>
+    <div class="reveal-r">
+      <form class="appt-form" id="citaForm">
+        <div class="form-title">Formulario de Cita</div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Nombre completo</label>
+            <input type="text" placeholder="Tu nombre" required>
+          </div>
+          <div class="form-group">
+            <label>Teléfono</label>
+            <input type="tel" placeholder="55 0000 0000" required>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Tipo de vehículo</label>
+            <select required>
+              <option value="" disabled selected>Selecciona...</option>
+              <option>Motocicleta</option>
+              <option>Automóvil / Camioneta</option>
+              <option>Tractocamión / Carga pesada</option>
+            </select>
+          </div>
+          <div class="form-group">
+            <label>Servicio</label>
+            <select required>
+              <option value="" disabled selected>Selecciona...</option>
+              <option>Mecánica General</option>
+              <option>Alineación y Balanceo</option>
+              <option>Sistema de Frenos</option>
+              <option>Revisión con Escáner</option>
+              <option>Diagnóstico general</option>
+              <option>Múltiples servicios</option>
+            </select>
+          </div>
+        </div>
+        <div class="form-row">
+          <div class="form-group">
+            <label>Fecha preferida</label>
+            <input type="date" required id="dateInput">
+          </div>
+          <div class="form-group">
+            <label>Marca y modelo</label>
+            <input type="text" placeholder="Ej: Honda CB500">
+          </div>
+        </div>
+        <div class="form-group">
+          <label>Descripción del problema</label>
+          <textarea placeholder="Describe brevemente el problema o servicio que necesitas..."></textarea>
+        </div>
+        <button type="submit" class="btn-blue" id="submitBtn">Confirmar Cita</button>
+        <div class="success-msg" id="successMsg">✓ ¡Cita recibida! Nos pondremos en contacto contigo pronto.</div>
+      </form>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-grid">
+    <div>
+      <div class="f-logo">MECÁNICA <em>TOTAL</em></div>
+      <p class="f-desc">Taller mecánico especializado en motocicletas, automóviles y tractocamiones. Tequixquiac, Estado de México.</p>
+    </div>
+    <div class="f-col">
+      <h4>Servicios</h4>
+      <ul class="f-links">
+        <li><a href="#servicios">Mecánica General</a></li>
+        <li><a href="#servicios">Alineación & Balanceo</a></li>
+        <li><a href="#servicios">Sistema de Frenos</a></li>
+        <li><a href="#servicios">Escáner Diagnóstico</a></li>
+      </ul>
+    </div>
+    <div class="f-col">
+      <h4>Contacto</h4>
+      <ul class="f-links">
+        <li><a href="tel:5570863685">55 7086 3685</a></li>
+        <li><a href="mailto:mecanicatotaltx@gmail.com">mecanicatotaltx@gmail.com</a></li>
+        <li><a href="#horario">Tequixquiac, Edo. Méx.</a></li>
+        <li><a href="#agendar">Agendar Cita</a></li>
+      </ul>
+    </div>
+  </div>
+  <div class="footer-bottom">
+    <p>© 2025 <strong>Mecánica Total</strong> · Tequixquiac, Estado de México</p>
+    <div class="f-socials">
+      <a href="tel:5570863685" title="Llamar">📞</a>
+      <a href="mailto:mecanicatotaltx@gmail.com" title="Email">✉</a>
+      <a href="https://wa.me/525570863685" title="WhatsApp" target="_blank">💬</a>
+    </div>
+  </div>
+</footer>
+
+<!-- FLOATING BUTTONS -->
+<div class="floating">
+  <a href="https://wa.me/525570863685" class="float-btn float-wa" target="_blank">💬 WhatsApp</a>
+  <a href="tel:5570863685" class="float-btn float-tel">📞 55 7086 3685</a>
+</div>
+
+<script>
+  // NAV
+  const nav = document.getElementById('nav');
+  window.addEventListener('scroll', () => nav.classList.toggle('scrolled', window.scrollY > 60));
+
+  // REVEAL
+  const revEls = document.querySelectorAll('.reveal, .reveal-l, .reveal-r');
+  const obs = new IntersectionObserver(entries => {
+    entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('in'); obs.unobserve(e.target); } });
+  }, { threshold: 0.12 });
+  revEls.forEach(el => obs.observe(el));
+
+  // MIN DATE
+  const di = document.getElementById('dateInput');
+  if (di) { const d = new Date(); d.setDate(d.getDate()+1); di.min = d.toISOString().split('T')[0]; }
+
+  // FORM
+  document.getElementById('citaForm').addEventListener('submit', function(e) {
+    e.preventDefault();
+    const btn = document.getElementById('submitBtn');
+    btn.textContent = 'Enviando...'; btn.style.opacity = '0.7';
+    setTimeout(() => {
+      document.getElementById('successMsg').style.display = 'block';
+      btn.textContent = '✓ Cita enviada'; btn.style.background = '#007840'; btn.style.opacity = '1';
+      this.reset();
+      setTimeout(() => {
+        btn.textContent = 'Confirmar Cita'; btn.style.background = ''; btn.style.opacity = '';
+        document.getElementById('successMsg').style.display = 'none';
+      }, 6000);
+    }, 1000);
+  });
+
+  // COUNTER
+  let counted = false;
+  const statsObs = new IntersectionObserver(entries => {
+    if (entries[0].isIntersecting && !counted) {
+      counted = true;
+      document.querySelectorAll('.stat-num').forEach(el => {
+        const val = parseInt(el.dataset.val);
+        const suffix = el.querySelector('em') ? el.querySelector('em').outerHTML : '';
+        let n = 0;
+        const step = val / 50;
+        const t = setInterval(() => {
+          n = Math.min(n + step, val);
+          el.innerHTML = Math.floor(n) + suffix;
+          if (n >= val) clearInterval(t);
+        }, 25);
+      });
+    }
+  }, { threshold: 0.4 });
+  const statsEl = document.getElementById('stats');
+  if (statsEl) statsObs.observe(statsEl);
+</script>
+</body>
+</html>
